@@ -1,0 +1,48 @@
+%{
+
+#include <stdio.h>
+int yylex();
+double ans = 0;
+void yyerror(const char* message) {
+	ans = -2147483647;
+	printf("Invaild format\n");
+};
+%}
+
+%union {
+	float 	floatVal;
+	int 	intVal;
+}
+%type <floatVal> NUMBER
+%type <floatVal> expression
+%type <floatVal> startsymbol
+
+%token LEFT_P RIGHT_P NUMBER
+
+%%
+input
+	: input startsymbol {
+		ans = $2;
+		printf("%f\n", ans);
+	}
+	| {
+	}
+startsymbol
+	: expression {
+		$$ = $1;
+	}
+	;
+expression
+	: NUMBER {
+		$$ = $1;
+	} 
+	| LEFT_P NUMBER expression expression RIGHT_P {
+		$$ = $2 * ($3 + $4) + (1.0f - $2) * ($3 - $4);
+	}
+	;
+%%
+
+int main() {
+	yyparse();
+	return 0;
+}

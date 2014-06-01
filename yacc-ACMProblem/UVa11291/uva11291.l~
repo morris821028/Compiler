@@ -1,0 +1,11 @@
+%{
+#include "uva11291.tab.h"
+%}
+
+%%
+[0-9]*(\.[0-9]*)	{sscanf(yytext, "%lf", &yylval); return NUMBER;}
+[(]					{return LEFT_P;}
+[)]					{return RIGHT_P;}
+\n					{}
+.					{}
+%%

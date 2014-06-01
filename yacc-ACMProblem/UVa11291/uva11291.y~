@@ -1,0 +1,29 @@
+%{
+
+#include <stdio.h>
+#define YYSTYPE double
+int yylex();
+double ans = 0;
+void yyerror(const char* message) {
+	ans = -2147483647;
+	printf("Invaild format\n");
+};
+%}
+
+%token LEFT_P RIGHT_P NUMBER
+
+%%
+startsymbol
+	: LEFT_P NUMBER expression expression RIGHT_P {
+		ans = $2 * $3 + (1 - $2) * $3;
+	}
+	;
+expression
+	: LEFT_P NUMBER expression expression RIGHT_P {
+		$$ = $2 * $3 + (1 - $2) * $3;
+	}
+	| NUMBER {
+		$$ = $1;
+	}
+	;
+%%
