@@ -90,22 +90,21 @@ class Grammar {
 					Production p;
 					for(it = configs.begin(); it != configs.end(); it++) {
 						p = it->first;
-						printf("%s -> ", p.LHS.c_str());
+						printf("%s->", p.LHS.c_str());
 						for(size_t i = 0; i < p.RHS.size(); i++) {
 							if(i == it->second.dot)
-								printf("@");
+								printf("¡E");
 							printf("%s", p.RHS[i].c_str());
 						}
 						if(it->second.dot == p.RHS.size())
-							printf("@");
+							printf("¡E");
 						puts("");
 					}
-					puts("");
 				}
 				bool operator<(const ConfigurationSet &x) const {
 					if(configs.size() != x.configs.size())
 						return configs.size() < x.configs.size();
-					for(set< pair<Production, State> >::iterator 	it = configs.begin(), jt = x.configs.begin();
+					for(set< pair<Production, State> >::iterator it = configs.begin(), jt = x.configs.begin();
 						it != configs.end(); it++, jt++) {
 						if(it->first != jt->first)
 							return it->first < jt->first;
@@ -148,6 +147,8 @@ class Grammar {
 		void lr0driver(queue<string> tokens);
 		void slr1driver(queue<string> tokens);
 		void lalr1driver(queue<string> tokens);
+		/* homework */
+		void hw_build_CFSM();
 };
 /* ------------------------
 ConfigurationSet method
@@ -520,14 +521,12 @@ void Grammar::build_CFSM() {
 	Q.push(s0);
 	
 	buildSymbols();
-	
+	/* hw need */
+	map<int, vector< pair<int, string> > > hwPrint;
+	/* hw need */
 	while(!Q.empty()) {
 		s0 = Q.front(), Q.pop();
 		LRstates.push_back(s0);
-#ifdef DEBUG
-		printf("------------- State %d -------------\n", s0.label);
-		s0.print();
-#endif
 		for(set<string>::iterator it = symbols.begin();
 			it != symbols.end(); it++) {
 			sb = ConfigurationSet::go_to0(s0, *it, *this);
@@ -537,27 +536,28 @@ void Grammar::build_CFSM() {
 					S.insert(sb);
 					Q.push(sb);
 				}
+				
 				go_to_table[s0.label][*it] = (* S.find(sb)).label;
+				/* hw need */
+				hwPrint[(* S.find(sb)).label].push_back(make_pair(s0.label, *it));
 			}
 		}
 	}
-	build_action();
-#ifdef DEBUG	
-	printf("State|");
-	for(set<string>::iterator it = symbols.begin();
-		it != symbols.end(); it++) {
-		printf("%5s|", (*it).c_str());
-	}
-	puts("");
+	// build_action();
+	printf("Total State: %d\n", label);
+#ifdef DEBUG
 	for(int i = 0; i < label; i++) {
-		printf("%5d|", i);
-		for(set<string>::iterator it = symbols.begin();
-			it != symbols.end(); it++) {
-			if(go_to_table[i].find(*it) != go_to_table[i].end())
-				printf("%5d|", go_to_table[i][*it]);
-			else
-				printf("%5s|", "");
+		if(hwPrint[i].size() > 0) {
+			printf("State %d from", i);
+			for(vector< pair<int, string> >::iterator it = hwPrint[i].begin();
+				it != hwPrint[i].end(); it++) {
+				printf("%cState %d(%s)", it == hwPrint[i].begin() ? ' ' : ',', it->first, it->second.c_str());
+			}
+			puts("");
+		} else {
+			printf("State %d\n", i);
 		}
+		LRstates[i].print();
 		puts("");
 	}
 #endif
@@ -656,13 +656,17 @@ void parsingProduction(string r, Grammar &g) {
 	p.label = ++production_label;
 	g.rules.push_back(p);
 #else
+	string dot("¡E");
+	if(r.find(dot) != string::npos)
+		r.replace(r.find(dot), dot.length(), "");
 	string div("->");
 	size_t found = r.find(div);
 	if(found != std::string::npos) {
 		string rhs = r.substr(found + div.length());
 		vector<string> tokens;
-		for(size_t i = 0; i < rhs.size(); i++)
+		for(size_t i = 0; i < rhs.size(); i++) {
 			tokens.push_back(rhs.substr(i, 1));
+		}
 		Production p(r.substr(0, found), tokens);
 		g.rules.push_back(p);
 	}
@@ -670,6 +674,9 @@ void parsingProduction(string r, Grammar &g) {
 } 
 
 int main() {
+	
+	freopen("input.txt", "r+t", stdin);
+	freopen("output.txt", "w+t", stdout); 
 	
 	char in[1024];
 	while(gets(in)) {
@@ -682,12 +689,9 @@ int main() {
 #ifdef HTMLProduction
 		g.start_symbol = "<system_goal>";
 #else
-		g.start_symbol = "S";
+		g.start_symbol = g.rules[0].LHS;
 #endif
 		g.build_CFSM();
-		
-		gets(in);
-		g.lr0driver(getTokens(in));
 	}
 	return 0;
 }
@@ -724,29 +728,11 @@ T->(E)
 
 # + ( ( # ) ) $
 
-HTML format
+S->¡EAe
+A->¡Eb
+A->¡El
 
- <program>			-> begin <statement_list> end
- <statement_list>	-> <statement> <statement_tail>
- <statement_tail>	-> <statement> <statement_tail>
- <statement_tail>	-> l
- <statement>		-> ID := <expression> ;
- <statement>		-> read ( <id_list> ) ;
- <statement>		-> write ( <expr_list> ) ;
- <id_list>			-> ID <id_tail>
- <id_tail>			-> , ID <id_tail>
- <id_tail>			-> l
- <expr_list>		-> <expression> <expr_tail>
- <expr_tail>		-> , <expression> <expr_tail>
- <expr_tail>		-> l
- <expression>		-> <primary> <primary_tail>
- <primary_tail>		-> <add_op>	<primary> <primary_tail>
- <primary_tail>		-> l
- <primary>			-> ( <expression> )
- <primary>			-> ID
- <primary>			-> INTLIT
- <add_op>			-> +
- <add_op>			-> -
- <system_goal>		-> <program> $
-
+S->Ae
+A->b
+A->l
 */ 

@@ -1,0 +1,62 @@
+Total State: 13
+State 0
+E->¡EE+T
+E->¡ET
+P->¡E#
+P->¡E(E)
+S->¡EE$
+T->¡EP
+T->¡ET*P
+
+State 1 from State 0(#),State 2(#),State 8(#),State 9(#)
+P->#¡E
+
+State 2 from State 0((),State 2((),State 8((),State 9(()
+E->¡EE+T
+E->¡ET
+P->¡E#
+P->¡E(E)
+P->(¡EE)
+T->¡EP
+T->¡ET*P
+
+State 3 from State 0(E)
+E->E¡E+T
+S->E¡E$
+
+State 4 from State 0(P),State 2(P),State 8(P)
+T->P¡E
+
+State 5 from State 0(T),State 2(T)
+E->T¡E
+T->T¡E*P
+
+State 6 from State 2(E)
+E->E¡E+T
+P->(E¡E)
+
+State 7 from State 3($)
+S->E$¡E
+
+State 8 from State 3(+),State 6(+)
+E->E+¡ET
+P->¡E#
+P->¡E(E)
+T->¡EP
+T->¡ET*P
+
+State 9 from State 5(*),State 11(*)
+P->¡E#
+P->¡E(E)
+T->T*¡EP
+
+State 10 from State 6())
+P->(E)¡E
+
+State 11 from State 8(T)
+E->E+T¡E
+T->T¡E*P
+
+State 12 from State 9(P)
+T->T*P¡E
+
