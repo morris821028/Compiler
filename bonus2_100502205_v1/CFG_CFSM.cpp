@@ -656,9 +656,9 @@ void parsingProduction(string r, Grammar &g) {
 	p.label = ++production_label;
 	g.rules.push_back(p);
 #else
-	string dot("¡E");
-	if(r.find(dot) != string::npos)
-		r.replace(r.find(dot), dot.length(), "");
+//	string dot("¡E");
+//	if(r.find(dot) != string::npos)
+//		r.replace(r.find(dot), dot.length(), "");
 	string div("->");
 	size_t found = r.find(div);
 	if(found != std::string::npos) {
@@ -696,42 +696,6 @@ int main() {
 	return 0;
 }
 /*
-S->E$
-E->E+T
-E->T
-T->T*P
-T->P
-P->#
-P->(E)
-
-S->E$
-E->E+T
-E->T
-T->#
-T->(E)
-
-# + # $
-
-S->E$
-E->E+T
-E->T
-T->#
-T->(E)
-
-# + ( # ) $
-
-S->E$
-E->E+T
-E->T
-T->#
-T->(E)
-
-# + ( ( # ) ) $
-
-S->¡EAe
-A->¡Eb
-A->¡El
-
 S->Ae
 A->b
 A->l
