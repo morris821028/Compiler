@@ -27,6 +27,8 @@ class Production {
 		}
 
 		bool operator<(const Production &p) const {
+			if(label != p.label)
+				return label < p.label;
 			if(LHS != p.LHS)
 				return LHS < p.LHS;
 			for(size_t i = 0, j = 0; i < RHS.size() && j < p.RHS.size(); i++, j++) {
@@ -644,8 +646,8 @@ queue<string> getTokens(char s[]) {
 }
 
 void parsingProduction(string r, Grammar &g) {
-#ifdef HTMLProduction
 	static int 		production_label = 0;
+#ifdef HTMLProduction
 	stringstream 	sin(r);
 	string 			lhs, foo;
 	vector<string> 	tokens;
@@ -668,6 +670,7 @@ void parsingProduction(string r, Grammar &g) {
 			tokens.push_back(rhs.substr(i, 1));
 		}
 		Production p(r.substr(0, found), tokens);
+		p.label = ++production_label;
 		g.rules.push_back(p);
 	}
 #endif
