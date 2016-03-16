@@ -24,10 +24,12 @@ bool MyDCE::runOnFunction(Function &F) {
 #ifdef MDEBUG	
 	puts("\t\033[36mFind Critical Instruction\033[0m");
 #endif
+
 	for (Instruction &Inst : inst_range(F)) {
 		if (Inst.mayHaveSideEffects() || Inst.isTerminator()) {
 			Worklist.push_back(&Inst);
 			Marked.insert(&Inst);
+
 #ifdef MDEBUG
 			Inst.dump();
 			if (Inst.isTerminator())
@@ -41,6 +43,7 @@ bool MyDCE::runOnFunction(Function &F) {
 #ifdef MDEBUG
 	puts("\t\033[36mFind Dependency Instruction\033[0m");
 #endif
+
 	while (!Worklist.empty()) {
 		Instruction &Inst = *Worklist.pop_back_val();
 		for (auto op = Inst.op_begin(); op != Inst.op_end(); op++) {
@@ -49,9 +52,11 @@ bool MyDCE::runOnFunction(Function &F) {
 				if (Marked.count(&j) == 0) {
 					Worklist.push_back(&j);
 					Marked.insert(&j);
+
 #ifdef MDEBUG
 					j.dump();
 #endif
+
 				}
 			}
 		}
@@ -63,25 +68,32 @@ bool MyDCE::runOnFunction(Function &F) {
 #ifdef MDEBUG
 	puts("Safe-Remove");
 #endif
+
 	for (Instruction &Inst : inst_range(F)) {
 		if (Marked.count(&Inst) == 0) {
 			Inst.dropAllReferences();
 			Worklist.push_back(&Inst);
 		}
 	}
+
 #ifdef MDEBUG
 	puts("DEAD");
 #endif
+
 	for (auto Inst : Worklist) {
+
 #ifdef MDEBUG
 		Inst->dump();
 #endif
+
 		Inst->eraseFromParent();
 		Changed = true;
 		EliminateCnt++;
 	}
+
 #ifdef MDEBUG
 	printf("\033[32m\t%s, #EliminateInst %d \033[0m\n", Changed ? "Changed" : "Unchanged", EliminateCnt);
 #endif
+
 	return Changed;
 }

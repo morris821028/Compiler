@@ -1,9 +1,15 @@
 #include <stdio.h>
 
+int foo(int *arg) {
+	const int a = 5;
+	int b;
+	if (a > 10 && arg == NULL)
+		b = 10;
+	else
+		b = 20;
+	arg = NULL;
+	return b;
+}
 int main() {
-	int unused = 0;
-	for (int i = 0; i < 3; i++)
-		puts("used");
-	return 0;
-	return 1;
+	return foo(NULL);
 }
