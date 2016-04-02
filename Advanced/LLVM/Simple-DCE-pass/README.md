@@ -16,7 +16,8 @@ cd ~/LLVM/llvm-3.7.1.src
 mkdir build && cd build
 cmake ..
 make -j12
-sudo cmake -DCMAKE_INSTALL_PREFIX=`/home/morris1028/LLVM/hw1/build` -P cmake_install.cmake
+sudo cmake -DCMAKE_INSTALL_PREFIX=/home/morris1028/LLVM/hw1/build -P cmake_install.cmake
+cd /home/morris1028/LLVM/hw1/build && cmake .. && make
 ```
 
 ```
