@@ -92,20 +92,24 @@ int ValueTable::replace(Instruction *I, BasicBlock *BB,
 	R = bop->getOperand(1);
 
 	Expression expr = create_expression(I);
+/*
+	I->dump();
+	printf("---> %u %u %u %u\n", expr.opcode, expr.type, expr.varargs[0], expr.varargs[1]);
+*/
 	DenseMap<Expression, uint32_t>::iterator eit = exprNumbering.find(expr);
 	if (eit != exprNumbering.end()) {
-		bop->dump();
-		printf("%u %u\n", expr.varargs[0], expr.varargs[1]);
 		IRBuilder<> Builder(I->getParent(), ++BasicBlock::iterator(I));
 		Instruction *J = invExprNumbering[eit->second];
-		assert(dyn_cast<Value>(J) && "Insturction -> Vailue");
+		assert(dyn_cast<Value>(J) && "Insturction -> Value");
 		// AllocaInst *newAlloc = Builder.CreateAlloca(J->getType());
 //		newAlloc->dump();
 //		Value *newValue = ???????;
 		//StoreInst *newStore = Builder.CreateStore(I, J);
 //		LoadInst *newLoad = Builder.CreateLoad(????);
 //		str->takeName(I);
-//		puts("duplicate !!!!!!!!!");
+		puts("duplicate !!!!!!!!!");
+		I->replaceAllUsesWith(J);
+		I->dump();
 		J->dump();
 	//	ReplaceInstWithInst(I, J);
 		return 1;
@@ -121,13 +125,13 @@ uint32_t ValueTable::lookup_or_add(Value *V) {
 	if (vit != valNumbering.end())
 		return vit->second;
 	if (!isa<Instruction>(V)) {
-		/* 
-		   printf("loopup or add %u %d\n", V, V->hasName());
-		   if (V->hasName())
-		   dbgs() << V->getName() << '\n';
-
-		   printf("Set %u %d\n", V, nextValNumber);
-		 */
+		/*
+		printf("loopup or add %u %d ???? \n", V, V->hasName());
+		if (V->hasName()) {
+			dbgs() << V->getName() << '\n';
+			printf("Set %u %d\n", V, nextValNumber);
+		}
+		*/
 		valNumbering[V] = nextValNumber;
 		return nextValNumber++;
 	}
@@ -195,16 +199,15 @@ Expression ValueTable::create_expression(Instruction *I) {
 }
 bool MyCSE::runOnBasicBlock(BasicBlock &BB) {
 	ValueTable vtable;
-
+	bool Changed = false;
 	for (BasicBlock::iterator it = BB.begin(); it != BB.end(); it++) {
 		Instruction *Inst = &(*it);
 		BinaryOperator *bop;
 		if ((bop = dyn_cast<BinaryOperator>(Inst))) {
 			if (vtable.replace(Inst, &BB, it))
-				return true;
+				Changed = true;
 		} else {
-			printf("fflush\n");
-			vtable.clear();
+			//		printf("fflush\n");
 		}
 	}
 
