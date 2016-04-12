@@ -6,5 +6,4 @@ add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
 set(CMAKE_CXX_FLAGS "-fno-rtti")
 
-add_subdirectory(MyDCE)
 add_subdirectory(MyCSE)
