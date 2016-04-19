@@ -1,0 +1,62 @@
+=== Basic Block Information ===
+	--- Entry ---
+	--- Exit ---
+	--- B1 ---
+		[0] a = + b c
+		[1] b = + a d
+	--- B2 ---
+		[2] c = + e f
+	--- B3 ---
+		[3] c = + e f
+	--- B4 ---
+		[4] g = + x y
+===
+
+=== Basic Block Available Expressions ===
+	--- Entry ---
+		GEN :
+		KILL:
+		IN  :
+		OUT :
+	--- Exit ---
+		GEN :
+		KILL:
+		IN  :
+			[4] g = + x y
+		OUT :
+			[4] g = + x y
+	--- B1 ---
+		GEN :
+			[0] a = + b c
+		KILL:
+			[1] b = + a d
+		IN  :
+		OUT :
+			[0] a = + b c
+	--- B2 ---
+		GEN :
+			[2] c = + e f
+		KILL:
+			[0] a = + b c
+		IN  :
+			[0] a = + b c
+		OUT :
+			[2] c = + e f
+	--- B3 ---
+		GEN :
+			[3] c = + e f
+		KILL:
+			[0] a = + b c
+		IN  :
+			[0] a = + b c
+		OUT :
+			[3] c = + e f
+	--- B4 ---
+		GEN :
+			[4] g = + x y
+		KILL:
+		IN  :
+		OUT :
+			[4] g = + x y
+===
+

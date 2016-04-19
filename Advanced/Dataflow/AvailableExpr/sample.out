@@ -1,0 +1,70 @@
+=== Basic Block Information ===
+	--- Entry ---
+	--- Exit ---
+	--- B1 ---
+		[0] a = + b c
+	--- B2 ---
+		[1] b = - a d
+	--- B3 ---
+		[2] c = - b c
+	--- B4 ---
+		[3] d = - a d
+===
+
+=== Basic Block Available Expressions ===
+	--- Entry ---
+		GEN :
+		KILL:
+		IN  :
+		OUT :
+	--- Exit ---
+		GEN :
+		KILL:
+		IN  :
+			[2] c = - b c
+			[3] d = - a d
+		OUT :
+			[2] c = - b c
+			[3] d = - a d
+	--- B1 ---
+		GEN :
+			[0] a = + b c
+		KILL:
+			[1] b = - a d
+			[3] d = - a d
+		IN  :
+		OUT :
+			[0] a = + b c
+	--- B2 ---
+		GEN :
+			[1] b = - a d
+		KILL:
+			[0] a = + b c
+			[2] c = - b c
+		IN  :
+			[0] a = + b c
+		OUT :
+			[1] b = - a d
+	--- B3 ---
+		GEN :
+			[2] c = - b c
+		KILL:
+			[0] a = + b c
+		IN  :
+			[1] b = - a d
+		OUT :
+			[1] b = - a d
+			[2] c = - b c
+	--- B4 ---
+		GEN :
+			[3] d = - a d
+		KILL:
+			[1] b = - a d
+		IN  :
+			[1] b = - a d
+			[2] c = - b c
+		OUT :
+			[2] c = - b c
+			[3] d = - a d
+===
+
