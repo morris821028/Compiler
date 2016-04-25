@@ -1,2 +1,3 @@
+CXX=g++
 all:
-	g++ -std=c++11 Liveness.cpp -o Liveness
+	$(CXX) -std=c++11 Liveness.cpp -o Liveness

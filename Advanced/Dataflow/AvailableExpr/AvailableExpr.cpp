@@ -1,4 +1,13 @@
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <algorithm>
+#include <set>
+#include <map>
+#include <bitset>
+#include <vector>
+#include <iostream>
+#include <sstream>
 using namespace std;
 #define MAXD 32
 #define MAXN 512
