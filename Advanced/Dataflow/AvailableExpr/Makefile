@@ -1,2 +1,3 @@
+CXX=g++
 all:
-	g++ -std=c++11 AvailableExpr.cpp -o AvailableExpr
+	$(CXX) -std=c++11 AvailableExpr.cpp -o AvailableExpr

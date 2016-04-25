@@ -2,6 +2,18 @@
 
 A variable is live out if used by a successor.
 
+### Install ###
+
+```
+$ make CXX=g++
+```
+
+or
+
+```
+$ make CXX=g++-4.8
+```
+
 ### Algorithm ###
 
 ```
