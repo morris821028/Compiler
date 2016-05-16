@@ -1,0 +1,80 @@
+diff --git a/.gitignore b/.gitignore
+index c64b5c2..7a3ebab 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -7,6 +7,7 @@
+ #==============================================================================#
+ 
+ build
++tags
+ 
+ #==============================================================================#
+ # File extensions to be ignored anywhere in the tree.
+diff --git a/lib/CodeGen/PrologEpilogInserter.cpp b/lib/CodeGen/PrologEpilogInserter.cpp
+index 939c500..91fc89d 100644
+--- a/lib/CodeGen/PrologEpilogInserter.cpp
++++ b/lib/CodeGen/PrologEpilogInserter.cpp
+@@ -182,6 +182,13 @@ bool PEI::runOnMachineFunction(MachineFunction &Fn) {
+   BitVector SavedRegs;
+   TFI->determineCalleeSaves(Fn, SavedRegs, RS);
+ 
++  dbgs() << F->getName() << ":";
++  for (int i = 0; i < SavedRegs.size(); i++) {
++     if (SavedRegs.test(i))
++        dbgs() << " " << i;
++  }
++  dbgs() << "\n";
++
+   // Insert spill code for any callee saved registers that are modified.
+   assignCalleeSavedSpillSlots(Fn, SavedRegs);
+ 
+diff --git a/lib/Target/X86/CMakeLists.txt b/lib/Target/X86/CMakeLists.txt
+index 5594915..1f1ec22 100644
+--- a/lib/Target/X86/CMakeLists.txt
++++ b/lib/Target/X86/CMakeLists.txt
+@@ -13,6 +13,7 @@ tablegen(LLVM X86GenSubtargetInfo.inc -gen-subtarget)
+ add_public_tablegen_target(X86CommonTableGen)
+ 
+ set(sources
++  X86RenameRegister.cpp
+   X86AsmPrinter.cpp
+   X86CallFrameOptimization.cpp
+   X86ExpandPseudo.cpp
+diff --git a/lib/Target/X86/X86.h b/lib/Target/X86/X86.h
+index 01e65b8..06c74d8 100644
+--- a/lib/Target/X86/X86.h
++++ b/lib/Target/X86/X86.h
+@@ -23,6 +23,8 @@ class FunctionPass;
+ class ImmutablePass;
+ class X86TargetMachine;
+ 
++FunctionPass *createX86RenameRegister();
++
+ /// This pass converts a legalized DAG into a X86-specific DAG, ready for
+ /// instruction scheduling.
+ FunctionPass *createX86ISelDag(X86TargetMachine &TM,
+diff --git a/lib/Target/X86/X86CallingConv.td b/lib/Target/X86/X86CallingConv.td
+index ed2e880..a902c76 100644
+--- a/lib/Target/X86/X86CallingConv.td
++++ b/lib/Target/X86/X86CallingConv.td
+@@ -817,7 +817,8 @@ def CC_X86 : CallingConv<[
+ def CSR_NoRegs : CalleeSavedRegs<(add)>;
+ 
+ def CSR_32 : CalleeSavedRegs<(add ESI, EDI, EBX, EBP)>;
+-def CSR_64 : CalleeSavedRegs<(add RBX, R12, R13, R14, R15, RBP)>;
++def CSR_64 : CalleeSavedRegs<(add RBX, R12, R13, R14, R15, RBP,
++   RCX, RDX, RDI, RSI, R8, R9, R10, R11)>;
+ 
+ def CSR_32EHRet : CalleeSavedRegs<(add EAX, EDX, CSR_32)>;
+ def CSR_64EHRet : CalleeSavedRegs<(add RAX, RDX, CSR_64)>;
+diff --git a/lib/Target/X86/X86TargetMachine.cpp b/lib/Target/X86/X86TargetMachine.cpp
+index 0e7e4c0..5f2e407 100644
+--- a/lib/Target/X86/X86TargetMachine.cpp
++++ b/lib/Target/X86/X86TargetMachine.cpp
+@@ -277,4 +277,6 @@ void X86PassConfig::addPreEmitPass() {
+     addPass(createX86PadShortFunctions());
+     addPass(createX86FixupLEAs());
+   }
++
++  addPass(createX86RenameRegister());
+ }
