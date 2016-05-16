@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rm *.ll *.o *.s
+rm *.ll *.o *.s *.out
