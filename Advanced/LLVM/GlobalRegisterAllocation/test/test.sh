@@ -7,7 +7,7 @@ CLANG_ENGINE=clang-3.8
 
 echo $LD_LIBRARY_PATH;
 
-$CLANG_ENGINE -fno-inline a.c -S -emit-llvm -o a.ll
+$CLANG_ENGINE -m32 -fno-inline a.c -S -emit-llvm -o a.ll
 opt a.ll -O2 -disable-inlining -o a.1.ll
-llc a.1.ll -O3 -o a.1.s
-$CLANG_ENGINE a.1.s -o a.o
+llc a.1.ll -march=x86 -O3 -o a.1.s
+$CLANG_ENGINE -m32 a.1.s -o a.o
