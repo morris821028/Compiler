@@ -1,1 +1,1 @@
-add_llvm_loadable_module(LLVMTestPass TestPass.cpp TestPass2.cpp DEPENDS intrinsics_gen)
+add_llvm_loadable_module(LLVMTestPass TestPass.cpp DEPENDS intrinsics_gen)

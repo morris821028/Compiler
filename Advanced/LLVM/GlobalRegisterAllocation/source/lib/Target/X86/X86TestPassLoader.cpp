@@ -16,4 +16,3 @@ ModulePass *(*loadableFunction2)();
 ModulePass *llvm::createX86TestPass2() {
   return loadableFunction2();
 }
-

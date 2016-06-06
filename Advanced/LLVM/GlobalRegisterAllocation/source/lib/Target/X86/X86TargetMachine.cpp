@@ -221,7 +221,7 @@ TargetPassConfig *X86TargetMachine::createPassConfig(PassManagerBase &PM) {
 void X86PassConfig::addIRPasses() {
   addPass(createX86TestPass2());
   addPass(createAtomicExpandPass(&getX86TargetMachine()));
-  
+
   TargetPassConfig::addIRPasses();
 }
 
